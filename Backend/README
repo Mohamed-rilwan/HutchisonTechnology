@@ -1,0 +1,3 @@
+Running application in docker local 
+- docker build -t doglistingapp-backend . 
+- docker run -p 3200:3200 doglistingapp-backend

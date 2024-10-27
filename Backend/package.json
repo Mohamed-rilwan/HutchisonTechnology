@@ -1,9 +1,9 @@
 {
-  "name": "backend",
+  "name": "doglistingapp",
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "nodemon dist/app.js",
+    "start": "nodemon dist/src/app.js",
     "dev": "nodemon --exec ts-node src/app.ts",
     "build": "tsc"
   },
