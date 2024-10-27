@@ -1,22 +1,24 @@
 {
   "affenpinscher": [
-    "New breed",
-    "New breed ",
-    "New breed sfs",
-    "New breed sfssfs",
-    "New breed sfssfssfsfs ",
-    "New "
+    "sfsfs",
+    "sfsf",
+    "sf",
+    "string"
   ],
-  "african": [],
-  "airedale": [],
-  "akita": [],
+  "african": [
+    "string"
+  ],
+  "airedale": [
+    "string",
+    "string",
+    "string"
+  ],
+  "akita": [
+    "string"
+  ],
   "appenzeller": [],
   "basenji": [],
-  "beagle": [
-    [
-      "string"
-    ]
-  ],
+  "beagle": [],
   "bluetick": [],
   "borzoi": [],
   "bouvier": [],
@@ -25,13 +27,7 @@
   "briard": [],
   "bulldog": [
     "boston",
-    "french",
-    [
-      "string"
-    ],
-    [
-      "string"
-    ]
+    "french"
   ],
   "bullterrier": [
     "staffordshire"
@@ -183,7 +179,15 @@
   "wolfhound": [
     "irish"
   ],
-  "sfsf": [
-    "string"
-  ]
+  "sfsfsgsgs": [],
+  "sfsfsgsgssfsfs": [
+    1
+  ],
+  "sfsfsgsgssfsfssds": [
+    1
+  ],
+  "sfsfsf": [
+    1
+  ],
+  "sfsfs": []
 }

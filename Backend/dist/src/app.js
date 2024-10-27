@@ -1,20 +1,23 @@
 "use strict";
-// src/app.ts
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const routes_1 = __importDefault(require("../routes/routes"));
+const dogRoutes_1 = __importDefault(require("../routes/dogRoutes"));
+const swagger_1 = require("./swagger");
 const app = (0, express_1.default)();
-// Middleware
+const PORT = process.env.PORT || 3200;
 app.use(express_1.default.json());
-app.get("/", (req, res) => { console.log("new ijwfwn"); });
-// Routes
-app.use('/api/dogs', routes_1.default);
-// Start the server
-const PORT = process.env.PORT || 8081;
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+app.use("/api", dogRoutes_1.default);
+app.use('/', swagger_1.swaggerUi.serve, swagger_1.swaggerUi.setup(swagger_1.swaggerDocs));
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
 //# sourceMappingURL=app.js.map

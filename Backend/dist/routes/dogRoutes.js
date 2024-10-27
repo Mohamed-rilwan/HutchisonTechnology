@@ -1,23 +1,20 @@
-import { Router, Request, Response } from 'express';
-
-const router = Router();
-import fs from 'fs';
-import path from 'path';
-
-import { Dog } from '../types';
-import { subscribe } from 'diagnostics_channel';
-
-const dogsDataFilePath = path.resolve(process.cwd(), 'data/dogs.json')
-
-const readDogsData = (): Record<string, any> => {
-    const data = fs.readFileSync(dogsDataFilePath, 'utf-8');
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const router = (0, express_1.Router)();
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const dogsDataFilePath = path_1.default.resolve(process.cwd(), 'data/dogs.json');
+const readDogsData = () => {
+    const data = fs_1.default.readFileSync(dogsDataFilePath, 'utf-8');
     return JSON.parse(data);
 };
-
-const updateDogsData = (data: Record<string, any>) => {
-    fs.writeFileSync(dogsDataFilePath, JSON.stringify(data, null, 2));
+const updateDogsData = (data) => {
+    fs_1.default.writeFileSync(dogsDataFilePath, JSON.stringify(data, null, 2));
 };
-
 /**
  * @swagger
  * /api/list:
@@ -30,13 +27,12 @@ const updateDogsData = (data: Record<string, any>) => {
 router.get("/list", (_, res) => {
     let dogsList = readDogsData();
     res.json(dogsList);
-})
-
+});
 /**
  * @swagger
  * /api/{breed}:
  *   put:
- *     summary: Add a list of sub-breed to an existing dog breed
+ *     summary: Add a sub-breed to an existing dog breed
  *     parameters:
  *       - name: breed
  *         in: path
@@ -62,31 +58,21 @@ router.get("/list", (_, res) => {
  *       500:
  *         description: Server Error
  */
-
-router.put('/:breed', (req: Request, res: Response) => {
+router.put('/:breed', (req, res) => {
     const breed = req.params.breed;
-    const subbreed: string[] = req.body;
+    const subbreed = req.body;
     let dogsList = readDogsData();
-
-    if (!dogsList[breed.trim()]) {
-        res.status(404).json({ message: "Dog breed not found" })
+    if (!dogsList[breed]) {
+        res.status(404).json({ message: "Dog breed not found" });
     }
-    else {
-        dogsList[breed] = [
-            ...dogsList[breed],
-            ...subbreed.filter((item) => !dogsList[breed].includes(item))
-        ];
-        updateDogsData(dogsList);
-
-        res.status(200).json({
-            message: 'Sub-breeds updated successfully',
-            breed: breed,
-            subbreed: dogsList[breed],
-        });
-    }
-})
-
-
+    dogsList[breed] = [new Set([...dogsList[breed], ...subbreed])];
+    updateDogsData(dogsList);
+    res.status(200).json({
+        message: 'Sub-breeds updated successfully',
+        breed: breed,
+        subbreed: dogsList[breed],
+    });
+});
 /**
  * @swagger
  * /api/{breed}/{subbreed}:
@@ -115,41 +101,37 @@ router.put('/:breed', (req: Request, res: Response) => {
  *       500:
  *         description: Server Error
  */
-router.put('/:breed/:subbreed', (req: Request, res: Response) => {
+router.put('/:breed/:subbreed', (req, res) => {
     const { breed, subbreed } = req.params;
     let dogsList = readDogsData();
     if (!dogsList[breed.trim()]) {
-        res.status(404).json({ message: "Dog breed not found" })
+        res.status(404).json({ message: "Dog breed not found" });
     }
-
     if (Array.isArray(dogsList[breed]) && dogsList[breed].includes(subbreed.trim())) {
-        res.status(409).json({ message: "Dog sub-breed breed already exists" })
+        res.status(409).json({ message: "Dog breed already exists" });
     }
     dogsList[breed] = Array.from(new Set([...dogsList[breed], subbreed]));
-
     updateDogsData(dogsList);
-
     res.status(200).json({
         message: 'Sub-breeds added successfully',
         breed: breed,
         subbreed: dogsList[breed],
     });
-})
-
+});
 /**
  * @swagger
  * /api/add/{breed}:
  *   post:
- *     summary: Add a new breed and sub-breeds of dog 
+ *     summary: Add a new breed and sub-breeds of dog
  *     parameters:
  *       - name: breed
  *         in: path
  *         required: true
- *         description: The name of the dog new breed 
+ *         description: The name of the dog new breed
  *         schema:
  *           type: string
  *     requestBody:
- *       required: false
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -160,34 +142,33 @@ router.put('/:breed/:subbreed', (req: Request, res: Response) => {
  *       200:
  *         description: Added dog breed and subbreed
  *       400:
- *         description: BadRequest, Correct type of sub breed  
+ *         description:BadRequest, Correct type of sub breed
  *       409:
- *         description: Conflict, Dog Breed already exists  
+ *         description: Conflict, Dog Breed already exists
  *       500:
  *         description: Server Error
  */
-router.post('/add/:breed', (req: Request, res: Response) => {
+router.post('/add/:breed', (req, res) => {
     const breed = req.params.breed;
-    const subbreed = Array.isArray(req.body) ? req.body : [];
-
+    const subbreed = req.body;
     let dogsList = readDogsData();
     if (dogsList[breed]) {
         res.status(409).json({
             message: "Dog breed already exists",
-        })
+        });
     }
-    if (subbreed.length > 0 && !subbreed.every(item => typeof item === 'string' && /^[a-zA-Z0-9-_]+$/.test(item))) {
-        res.status(400).json({ message: "Invalid sub breed types, all elements must be strings with valid characters" });
+    if (!Array.isArray(subbreed) || !subbreed.every(item => typeof item === 'string')) {
+        res.status(400).json({ message: "Invalid sub breed types" });
     }
     else {
-        dogsList[breed.trim()] = subbreed
+        dogsList[breed.trim()] = subbreed;
         updateDogsData(dogsList);
         res.status(200).json({
             message: 'Dog Breed added successfully',
             breed: breed,
             subbreed: dogsList[breed],
-        })
+        });
     }
-})
-
-export default router;
+});
+exports.default = router;
+//# sourceMappingURL=dogRoutes.js.map
