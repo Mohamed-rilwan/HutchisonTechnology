@@ -18,7 +18,7 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(cors({
-    origin: HOST_URL,
+    origin: ['http://localhost:3000',HOST_URL],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type']
 }));
