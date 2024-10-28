@@ -106,12 +106,11 @@ The home screen allows you to do two things
 Users can enter a breed name and add multiple sub-breeds. Once saved, this new breed and its sub-breeds will persist and appear every time the application is loaded.
 
 ![Alt text](./Screenshot/AddnewBreed.jpeg)
-
 - **View Existing Dog Breed Details**
 Selecting a breed from the dropdown navigates to a details page, displaying:
-- The selected breed's name
-- Cards for each sub-breed (if available)
-- A sample photo of each sub-breed fetched from a publicly available API (Note: This image changes every time the page is refreshed).
+   - The selected breed's name
+   - Cards for each sub-breed (if available)
+   - A sample photo of each sub-breed fetched from a publicly available API (Note: This image changes every time the page is refreshed).
 
 ![Alt text](./Screenshot/BreedDetails.jpeg)
 
