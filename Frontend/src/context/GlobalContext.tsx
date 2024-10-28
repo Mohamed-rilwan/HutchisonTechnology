@@ -1,6 +1,7 @@
 import React, { useState, createContext, useEffect, ReactNode } from "react";
 import { Dog } from "../types";
 import { listAllDogs } from "../services/DogListService";
+import SimpleBackdrop from "../components/Loader";
 
 interface GlobalContextType {
   dogList: Dog;
@@ -20,6 +21,7 @@ const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
   children,
 }) => {
   const [dogList, setDogList] = useState<Dog>({});
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchDogDetails = async () => {
@@ -28,15 +30,17 @@ const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
         setDogList(dogsData);
       } catch (error) {
         console.error("Error fetching dog details:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDogDetails();
   }, []);
 
-  return (
+    return (
     <GlobalContext.Provider value={{ dogList, setDogList }}>
-      {children}
+      {loading ? <SimpleBackdrop /> : children}
     </GlobalContext.Provider>
   );
 };

@@ -1,6 +1,6 @@
 import { Dog } from "../types";
 
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = 'https://hutchisontechnology.onrender.com' ;
 
 /**
  * Fetches all dogs from the server.
