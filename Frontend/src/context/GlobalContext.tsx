@@ -3,12 +3,12 @@ import { Dog } from "../types";
 import { listAllDogs } from "../services/DogListService";
 
 interface GlobalContextType {
-  dogList: Dog | undefined;
-  setDogList: (dogs: Dog) => void;
+  dogList: Dog;
+  setDogList: React.Dispatch<React.SetStateAction<Dog>>;
 }
 
 export const GlobalContext = createContext<GlobalContextType>({
-  dogList: undefined,
+  dogList: {},
   setDogList: () => {},
 });
 
@@ -19,7 +19,7 @@ interface GlobalContextProviderProps {
 const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
   children,
 }) => {
-  const [dogList, setDogList] = useState<Dog | undefined>(undefined);
+  const [dogList, setDogList] = useState<Dog>({});
 
   useEffect(() => {
     const fetchDogDetails = async () => {

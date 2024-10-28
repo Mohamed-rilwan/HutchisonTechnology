@@ -11,7 +11,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import AddDogs from "./AddDogs";
+import AddDogs from "../components/AddDogs";
 import HomeIcon from "@mui/icons-material/Home";
 
 function Home() {

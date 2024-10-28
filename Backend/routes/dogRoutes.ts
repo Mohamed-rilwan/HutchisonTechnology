@@ -190,4 +190,57 @@ router.post('/add/:breed', (req: Request, res: Response) => {
     }
 })
 
+
+/**
+ * @swagger
+ * /api/{breed}/{subbreed}:
+ *   delete:
+ *     summary: Delete a sub-breed from an existing dog breed
+ *     parameters:
+ *       - name: breed
+ *         in: path
+ *         required: true
+ *         description: The name of the dog breed from which you want to delete a sub-breed
+ *         schema:
+ *           type: string
+ *       - name: subbreed
+ *         in: path
+ *         required: true
+ *         description: The name of the subbreed you want to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Sub-breed deleted successfully
+ *       404:
+ *         description: Dog breed or sub-breed not found
+ *       500:
+ *         description: Server Error
+ */
+
+router.delete('/:breed/:subbreed', (req: Request, res: Response) => {
+    const breed = req.params.breed.trim();
+    const subbreed = req.params.subbreed.trim();
+    let dogsList = readDogsData();
+
+    if (!dogsList[breed]) {
+        res.status(404).json({ message: "Dog breed not found" });
+    }
+
+    if (!dogsList[breed].includes(subbreed)) {
+        res.status(404).json({ message: "Sub-breed not found" });
+    }
+
+    dogsList[breed] = dogsList[breed].filter((item) => item !== subbreed);
+
+    updateDogsData(dogsList);
+
+    res.status(200).json({
+        message: 'Sub-breed deleted successfully',
+        breed: breed,
+        subbreeds: dogsList[breed],
+    });
+});
+
+
 export default router;
