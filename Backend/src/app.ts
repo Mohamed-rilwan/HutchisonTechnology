@@ -3,7 +3,7 @@ import dogRoutes from '../routes/dogRoutes';
 import { swaggerDocs, swaggerUi } from './swagger';
 
 const app = express();
-const PORT = process.env.PORT || 3200;
+const HOST_URL = process.env.HOST_URL || 'http://localhost:3200'
 
 app.use(express.json()); 
 app.use(function(req, res, next) {
@@ -15,6 +15,6 @@ app.use(function(req, res, next) {
 app.use("/api", dogRoutes)
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(HOST_URL, () => {
+    console.log(`Server is running on ${HOST_URL}  `);
 });
