@@ -1,0 +1,10 @@
+/Frontend-ReactJS/doglistingapp/node_modules
+/Backend-GraphQL/node_modules
+/Frontend-ReactJS/DogListing/.vs/DogListing/v17
+/Frontend-ReactJS/DogListing/.vs/DogListing
+/Frontend-ReactJS/DogListing/bin/Debug/net8.0
+/Frontend-ReactJS/DogListing/obj
+/Backend-NodeJs/config.env
+/Backend/node_modules
+/Frontend/build
+/Backend/dist

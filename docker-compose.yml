@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: node:19  
+    working_dir: /usr/src/app
+    build:
+      context: ./Frontend  
+      dockerfile: Dockerfile  
+    ports:
+      - "3000:3000" 
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    container_name: doglistingapp-frontend
+
+  backend:
+    image: node:19  
+    working_dir: /usr/src/app
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile 
+    volumes:
+      - ./Backend:/usr/src/app  
+    ports:
+      - "3200:3200" 
+    command: npm run dev  
+    environment:
+      - NODE_ENV=development 
+    container_name: doglistingapp-backend
+
+networks:
+  app-network:
+    driver: bridge
