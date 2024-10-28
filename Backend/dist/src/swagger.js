@@ -7,6 +7,9 @@ exports.swaggerUi = exports.swaggerDocs = void 0;
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 exports.swaggerUi = swagger_ui_express_1.default;
+require('dotenv').config();
+const cors = require('cors');
+const HOST_URL = process.env.HOST_URL || 'http://localhost:3200';
 const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
@@ -17,7 +20,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:3000/',
+                url: `${HOST_URL}`
             },
         ],
     },

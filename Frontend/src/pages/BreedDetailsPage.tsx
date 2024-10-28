@@ -1,7 +1,9 @@
 import * as React from "react";
 import {
+  Alert,
   Box,
   createTheme,
+  Snackbar,
   Stack,
   ThemeProvider,
   Typography,
@@ -11,8 +13,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import AddDogs from "../components/AddDogs";
 import DogCard from "../components/DogCard";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { deleteDogSubbreed, listAllDogs } from "../services/DogListService";
+import SimpleBackdrop from "../components/Loader";
 
 const theme = createTheme({});
 
@@ -20,6 +23,8 @@ const BreedDetails = () => {
   const { dogList, setDogList } = useContext(GlobalContext);
   const navigate = useNavigate();
   const { breed } = useParams();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [showStatus, setShowStatus] = useState("");
 
   useEffect(() => {
     const fetchDogList = async () => {
@@ -28,17 +33,17 @@ const BreedDetails = () => {
         setDogList(response);
       } catch (error) {
         console.error("Failed to fetch dog list:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     if (!dogList) {
       fetchDogList();
+    } else {
+      setLoading(false);
     }
   }, [dogList, setDogList]);
-
-  if (!dogList) {
-    return <div>Loading...</div>;
-  }
 
   const breedDetails = dogList[breed!];
 
@@ -47,23 +52,49 @@ const BreedDetails = () => {
   }
 
   const handleSubbreedDelete = async (breed: string, subbreed: string) => {
-    const response = await deleteDogSubbreed(breed, subbreed);
+    setLoading(true);
+    try {
+      const response = await deleteDogSubbreed(breed, subbreed);
 
-    if (response.message === "Sub-breed deleted successfully") {
-      setDogList((prevDogList) => {
-        if (!prevDogList) return prevDogList;
-        const updatedBreedList =
-          prevDogList[breed]?.filter((item) => item !== subbreed) || [];
-        return {
-          ...prevDogList,
-          [breed]: updatedBreedList,
-        };
-      });
+      if (response.message === "Sub-breed deleted successfully") {
+        setDogList((prevDogList) => {
+          if (!prevDogList) return prevDogList;
+          const updatedBreedList =
+            prevDogList[breed]?.filter((item) => item !== subbreed) || [];
+          return {
+            ...prevDogList,
+            [breed]: updatedBreedList,
+          };
+        });
+      } else {
+        setShowStatus("Failed to delete sub-breed. Try after sometime");
+      }
+    } catch (error) {
+      console.error("Error deleting sub-breed:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
+      {loading && <SimpleBackdrop />}
+      {
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          open={showStatus !== ""}
+          autoHideDuration={2000}
+          onClose={() => setShowStatus("")}
+        >
+          <Alert
+            onClose={() => setShowStatus("")}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            {showStatus}
+          </Alert>
+        </Snackbar>
+      }
       <React.Fragment>
         <ThemeProvider theme={theme}>
           <HomeIcon
@@ -84,8 +115,8 @@ const BreedDetails = () => {
               flexDirection: "column",
               alignItems: "center",
               height: "50vh",
-              justifyContent: "flex-start", 
-              paddingTop: "10%", 
+              justifyContent: "flex-start",
+              paddingTop: "10%",
             }}
           >
             <Typography
@@ -116,7 +147,7 @@ const BreedDetails = () => {
             </Typography>
 
             <Stack
-              spacing={2} 
+              spacing={2}
               direction="row"
               useFlexGap
               sx={{

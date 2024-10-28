@@ -32,7 +32,7 @@ router.get("/list", (_, res) => {
  * @swagger
  * /api/{breed}:
  *   put:
- *     summary: Add a sub-breed to an existing dog breed
+ *     summary: Add a list of sub-breed to an existing dog breed
  *     parameters:
  *       - name: breed
  *         in: path
@@ -62,16 +62,21 @@ router.put('/:breed', (req, res) => {
     const breed = req.params.breed;
     const subbreed = req.body;
     let dogsList = readDogsData();
-    if (!dogsList[breed]) {
+    if (!dogsList[breed.trim()]) {
         res.status(404).json({ message: "Dog breed not found" });
     }
-    dogsList[breed] = [new Set([...dogsList[breed], ...subbreed])];
-    updateDogsData(dogsList);
-    res.status(200).json({
-        message: 'Sub-breeds updated successfully',
-        breed: breed,
-        subbreed: dogsList[breed],
-    });
+    else {
+        dogsList[breed] = [
+            ...dogsList[breed],
+            ...subbreed.filter((item) => !dogsList[breed].includes(item))
+        ];
+        updateDogsData(dogsList);
+        res.status(200).json({
+            message: 'Sub-breeds updated successfully',
+            breed: breed,
+            subbreed: dogsList[breed],
+        });
+    }
 });
 /**
  * @swagger
@@ -108,7 +113,7 @@ router.put('/:breed/:subbreed', (req, res) => {
         res.status(404).json({ message: "Dog breed not found" });
     }
     if (Array.isArray(dogsList[breed]) && dogsList[breed].includes(subbreed.trim())) {
-        res.status(409).json({ message: "Dog breed already exists" });
+        res.status(409).json({ message: "Dog sub-breed breed already exists" });
     }
     dogsList[breed] = Array.from(new Set([...dogsList[breed], subbreed]));
     updateDogsData(dogsList);
@@ -131,7 +136,7 @@ router.put('/:breed/:subbreed', (req, res) => {
  *         schema:
  *           type: string
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
  *         application/json:
  *           schema:
@@ -142,7 +147,7 @@ router.put('/:breed/:subbreed', (req, res) => {
  *       200:
  *         description: Added dog breed and subbreed
  *       400:
- *         description:BadRequest, Correct type of sub breed
+ *         description: BadRequest, Correct type of sub breed
  *       409:
  *         description: Conflict, Dog Breed already exists
  *       500:
@@ -150,15 +155,15 @@ router.put('/:breed/:subbreed', (req, res) => {
  */
 router.post('/add/:breed', (req, res) => {
     const breed = req.params.breed;
-    const subbreed = req.body;
+    const subbreed = Array.isArray(req.body) ? req.body : [];
     let dogsList = readDogsData();
     if (dogsList[breed]) {
         res.status(409).json({
             message: "Dog breed already exists",
         });
     }
-    if (!Array.isArray(subbreed) || !subbreed.every(item => typeof item === 'string')) {
-        res.status(400).json({ message: "Invalid sub breed types" });
+    if (subbreed.length > 0 && !subbreed.every(item => typeof item === 'string' && /^[a-zA-Z0-9-_]+$/.test(item))) {
+        res.status(400).json({ message: "Invalid sub breed types, all elements must be strings with valid characters" });
     }
     else {
         dogsList[breed.trim()] = subbreed;
@@ -169,6 +174,50 @@ router.post('/add/:breed', (req, res) => {
             subbreed: dogsList[breed],
         });
     }
+});
+/**
+ * @swagger
+ * /api/{breed}/{subbreed}:
+ *   delete:
+ *     summary: Delete a sub-breed from an existing dog breed
+ *     parameters:
+ *       - name: breed
+ *         in: path
+ *         required: true
+ *         description: The name of the dog breed from which you want to delete a sub-breed
+ *         schema:
+ *           type: string
+ *       - name: subbreed
+ *         in: path
+ *         required: true
+ *         description: The name of the subbreed you want to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Sub-breed deleted successfully
+ *       404:
+ *         description: Dog breed or sub-breed not found
+ *       500:
+ *         description: Server Error
+ */
+router.delete('/:breed/:subbreed', (req, res) => {
+    const breed = req.params.breed.trim();
+    const subbreed = req.params.subbreed.trim();
+    let dogsList = readDogsData();
+    if (!dogsList[breed]) {
+        res.status(404).json({ message: "Dog breed not found" });
+    }
+    if (!dogsList[breed].includes(subbreed)) {
+        res.status(404).json({ message: "Sub-breed not found" });
+    }
+    dogsList[breed] = dogsList[breed].filter((item) => item !== subbreed);
+    updateDogsData(dogsList);
+    res.status(200).json({
+        message: 'Sub-breed deleted successfully',
+        breed: breed,
+        subbreeds: dogsList[breed],
+    });
 });
 exports.default = router;
 //# sourceMappingURL=dogRoutes.js.map

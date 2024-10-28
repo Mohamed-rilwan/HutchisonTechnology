@@ -1,3 +1,10 @@
 Running application in docker local 
 - docker build -t doglistingapp-backend . 
 - docker run -p 3200:3200 doglistingapp-backend
+
+
+Deployment 
+- using a free tier versison of Render 
+Since a free instance is used for deploying the node server, the service will spin down with inactivity,
+ which can delay requests by 50 seconds or more.
+-Request giving a adequste time before testing the backend services 
