@@ -1,8 +1,8 @@
 import * as React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./components/Home";
-import BreedDetails from "./components/BreedDetails";
-import ErrorPage from "./components/ErrorPage";
+import Home from "./pages/HomePage";
+import BreedDetails from "./pages/BreedDetailsPage";
+import ErrorPage from "./pages/ErrorPage";
 import GlobalContextProvider from "./context/GlobalContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 

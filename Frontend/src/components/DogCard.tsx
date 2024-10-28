@@ -12,16 +12,17 @@ const defaultImagePath = "/assets/default.png";
 interface SubbreedProp {
   breed: string;
   subbreed: string;
+  handleDelete: () => Promise<void>;
 }
 
 export default function DogCard(props: SubbreedProp) {
-  const { breed, subbreed } = props;
+  const { breed, subbreed, handleDelete } = props;
   const [dogImage, setDogImage] = useState<string>(defaultImagePath);
 
   useEffect(() => {
     const fetchDogImages = async () => {
       try {
-        //Using a open API for dog images 
+        //Using a open API for dog images
         const response = await fetch(
           `https://dog.ceo/api/breed/${breed.trim()}/${subbreed.trim()}/images`
         );
@@ -44,7 +45,7 @@ export default function DogCard(props: SubbreedProp) {
   }, [breed, subbreed]);
 
   return (
-    <Card sx={{ display: "flex", width: "400px" }}>
+    <Card sx={{ display: "flex", width: "400px", border: "1px solid #8888" }}>
       <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
         <CardContent sx={{ flex: "1 0 auto" }}>
           <Typography
@@ -60,7 +61,7 @@ export default function DogCard(props: SubbreedProp) {
           </Typography>
         </CardContent>
         <Box sx={{ display: "flex", alignItems: "center", pl: 1, pb: 1 }}>
-          <IconButton color="error">
+          <IconButton color="error" onClick={handleDelete}>
             <RemoveCircleIcon />
           </IconButton>
         </Box>

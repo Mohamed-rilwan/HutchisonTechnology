@@ -2,6 +2,7 @@ import {
   Alert,
   Button,
   Chip,
+  Divider,
   IconButton,
   Snackbar,
   Stack,
@@ -9,18 +10,12 @@ import {
   Typography,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PetsIcon from "@mui/icons-material/Pets";
 import SaveIcon from "@mui/icons-material/Save";
 import { addNewDogBreed, updateDogBreed } from "../services/DogListService";
-
-interface Subbreed {
-  id: number;
-  name: string;
-}
-
-const vertical = "bottom";
-const horizontal = "center";
+import { GlobalContext } from "../context/GlobalContext";
+import { SubbreedProps } from "../types";
 
 export default function AddDogs({
   newBreed,
@@ -28,8 +23,10 @@ export default function AddDogs({
 }: {
   newBreed: boolean;
   breed?: string;
+  subbreed?: SubbreedProps[];
 }) {
-  const [subbreeds, setSubbreeds] = useState<Subbreed[]>([]);
+  const { dogList, setDogList } = useContext(GlobalContext);
+  const [subbreeds, setSubbreeds] = useState<SubbreedProps[]>([]);
   const [newSubBreed, setSubNewbreed] = useState<string>("");
   const [dogBreed, setDogBreed] = useState<string>(breed || "");
   const [showStatus, setShowStatus] = useState<boolean>(false);
@@ -47,28 +44,27 @@ export default function AddDogs({
   };
 
   const handleSave = async () => {
+    const subbreedToSave = newBreed
+      ? subbreeds.map((subbreed) => subbreed.name)
+      : [
+          ...(dogList![dogBreed] || []),
+          ...subbreeds.map((subbreed) => subbreed.name),
+        ];
+
+    let response;
     if (newBreed) {
-      var response = await addNewDogBreed(
-        dogBreed,
-        subbreeds.map((subbreed) => subbreed.name)
-      );
-
-      if (response.breed === dogBreed) {
-        setDogBreed("");
-        setSubNewbreed("");
-        setSubbreeds([]);
-        setShowStatus(true);
-      }
+      response = await addNewDogBreed(dogBreed, subbreedToSave);
     } else {
-      var updateResponse = await updateDogBreed(
-        dogBreed,
-        subbreeds.map((subbreed) => subbreed.name)
-      );
+      response = await updateDogBreed(dogBreed, subbreedToSave);
+    }
 
-      if (updateResponse.breed === dogBreed) {
-        setSubNewbreed("");
-        setSubbreeds([]);
-        setShowStatus(true);
+    if (response.breed === dogBreed) {
+      setSubNewbreed("");
+      setSubbreeds([]);
+      setShowStatus(true);
+      setDogList((prev) => ({ ...prev, [dogBreed]: subbreedToSave }));
+      if (newBreed) {
+        setDogBreed("");
       }
     }
   };
@@ -76,11 +72,16 @@ export default function AddDogs({
   return (
     <>
       <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         open={showStatus}
         autoHideDuration={2000}
+        onClose={() => setShowStatus(false)}
       >
-        <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
+        <Alert
+          onClose={() => setShowStatus(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {newBreed ? "Added Dog breed." : "Updated Dog Breed."}
         </Alert>
       </Snackbar>
@@ -105,20 +106,25 @@ export default function AddDogs({
           />
         </>
       )}
+
       {subbreeds.length > 0 && (
-        <Typography
-          sx={{ marginTop: "2%" }}
-          variant="h5"
-          component="div"
-          fontWeight="500"
-          color="textDisabled"
-        >
-          Sub-Breed
-        </Typography>
+        <Divider sx={{ width: "50vw", paddingTop: "2%" }}>
+          <Chip
+            color="success"
+            variant="outlined"
+            label={
+              newBreed
+                ? "Sub-Breed"
+                : "Newly Added Sub-Breed" + " (Save before closing)"
+            }
+            size="small"
+          />
+        </Divider>
       )}
       <Stack sx={{ margin: "2%" }} direction="row" spacing={1}>
         {subbreeds.map((item, index) => (
           <Chip
+            id={`${index}`}
             label={item.name}
             variant="outlined"
             onDelete={() => removeSubbreed(item.id)}
@@ -144,7 +150,7 @@ export default function AddDogs({
       </Stack>
       <Button
         disabled={!dogBreed}
-        sx={{ marginTop: "2%" }}
+        sx={{ margin: "2% 0 2% 0" }}
         variant="contained"
         color="primary"
         endIcon={<SaveIcon fontSize="large" />}

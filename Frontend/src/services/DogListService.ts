@@ -68,3 +68,29 @@ export const updateDogBreed = async (breed: string, subbreeds: string[]) => {
     throw new Error(`Failed to update dog breed: ${error.message}`);
   }
 };
+
+
+
+/**
+ * Delete a sub breed for dog.
+ * @param breed The breed to update.
+ * @param subbreed The subbreed to delete.
+ * @returns A Promise that resolves to the JSON response from the server.
+ * @throws An error if the request fails.
+ */
+export const deleteDogSubbreed = async (breed: string, subbreed: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/${breed}/${subbreed}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to delete dog subbreed: ${response.status} - ${response.statusText}`);
+    }
+    return response.json();
+  } catch (error: any) {
+    throw new Error(`Failed to delete dog subbreed: ${error.message}`);
+  }
+};
