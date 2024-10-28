@@ -1,4 +1,4 @@
-# Dog Listing Application - Backend Node Server
+# Dog Listing Application 
 
 Welcome to the Dog Listing Application! This application allows users to explore various dog breeds and their sub-breeds. 
 Below you'll find instructions on how to set up and run the application locally, as well as how to access the deployed version.
