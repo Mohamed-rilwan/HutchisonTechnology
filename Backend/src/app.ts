@@ -2,6 +2,8 @@ import express from 'express';
 import dogRoutes from '../routes/dogRoutes';
 import { swaggerDocs, swaggerUi } from './swagger';
 
+require('dotenv').config();
+
 const app = express();
 const HOST_URL = process.env.HOST_URL || 'http://localhost:3200'
 
