@@ -27,7 +27,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         if (this.state.errorInfo) {
             return (
                 <div>
-                    <h4>Sorry. There has been a failure in the Blog Page. Reload the client and server.</h4>
+                    <h4>Sorry. There has been a failure in the Dog breed listing  Page. Reload the client and server.</h4>
                     <p>{this.state.error && this.state.error.toString()}</p>
                     <Button color="primary" onClick={() => { window.location.href = "/" }}>Reload</Button>
                 </div>
